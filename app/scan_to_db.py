@@ -46,6 +46,7 @@ def log_scan(gtid, name, action, timestamp):
 def read_from_scanner():
     gtid = input()
     gtid = gtid[6:15] # extract gtid from string
+    #maybe split this into time and date
     time = datetime.now()
     time_str = time.strftime("%B %d, %Y at %I:%M %p")
 
