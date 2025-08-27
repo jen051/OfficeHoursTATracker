@@ -59,17 +59,17 @@ def read_from_scanner():
 
     return gtid, name, action_dictionary[gtid], time_str
 
-
-#loop
-
-#try:
-# while True:
-try:
+def main_loop():
     while True:
-        gtid, name, action_dictionary[gtid], time_str = read_from_scanner()
-        log_scan(gtid, name, action_dictionary[gtid], time_str)
-except KeyboardInterrupt:
-    db_connect.close()
+        try:
+            gtid, name, action_dictionary[gtid], time_str = read_from_scanner()
+            log_scan(gtid, name, action_dictionary[gtid], time_str)
+        except KeyboardInterrupt:
+            db_connect.close()
+
+if __name__ == "__main__":
+    main_loop()
+
 
 
 
