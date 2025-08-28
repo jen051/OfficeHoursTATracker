@@ -19,18 +19,23 @@ function App() {
 
   return (
     <div>
-      <h1>Recent Scans</h1>
+      <h1 className='left-header'>
+        CS2050 Office Hours
+      </h1>
+      <div>
+      <h2>Present TAs</h2>
       {scans.length === 0 ? (
         <p>No scans yet</p>
       ) : (
         <ul>
           {scans.map(scan => (
             <li key={scan.id}>
-              {scan.gtid} — {scan.timestamp}
+              {scan}
             </li>
           ))}
         </ul>
       )}
+    </div>
     </div>
   )
 }

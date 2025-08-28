@@ -4,7 +4,7 @@ from flask_cors import CORS  # pip install flask-cors (for dev)
 from scan_to_db import log_scan, read_from_scanner, db_connect, action_dictionary
 
 app = Flask(__name__)
-DB = "../scans.db"
+DB = "data/scans.db"
 
 # Helpers
 
@@ -25,10 +25,21 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 @app.get("/api/scans")
 def scans():
     db = get_db()
-    print(db)
-    rows = db.execute("SELECT * FROM scans").fetchall()
-    print(rows)
-    return jsonify([dict(row) for row in rows])
+    # conn = sqlite3.connect("scans.db")
+    # cursor = conn.cursor()
+    # # Get the latest event for each user
+    query = """
+        SELECT name, action 
+        FROM scans 
+        WHERE id IN (
+            SELECT MAX(id) FROM scans GROUP BY name
+        )
+    """
+    rows = db.execute(query).fetchall()
+    # print(rows[0])
+    clocked_in_tas = [r[0] for r in rows if r[1] == "CLOCK IN"]
+    print(clocked_in_tas)
+    return jsonify(clocked_in_tas)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

@@ -4,13 +4,13 @@ from datetime import datetime
 import csv
 import os
 
-database_file = "scans.db"
+database_file = "data/scans.db"
 
 action_dictionary = {}
 
 # Getting names from csv file
 name_dictionary = {}
-base_dir = os.path.dirname(__file__)  # directory of the script
+base_dir = os.path.dirname("data/")  # directory of the script
 file_path = os.path.join(base_dir, "names.csv")
 
 with open(file_path, mode='r', encoding='utf-8-sig') as file:
@@ -33,6 +33,8 @@ CREATE TABLE IF NOT EXISTS scans (
 )
 """
 
+
+
 cursor.execute(query)
 
 db_connect.commit()
@@ -46,6 +48,9 @@ def log_scan(gtid, name, action, timestamp):
 def read_from_scanner():
     gtid = input()
     gtid = gtid[6:15] # extract gtid from string
+
+    # student scan, add to queue
+
     #maybe split this into time and date
     time = datetime.now()
     time_str = time.strftime("%B %d, %Y at %I:%M %p")
@@ -64,8 +69,9 @@ def main_loop():
         try:
             gtid, name, action_dictionary[gtid], time_str = read_from_scanner()
             log_scan(gtid, name, action_dictionary[gtid], time_str)
-        except KeyboardInterrupt:
-            db_connect.close()
+        except KeyError: #CHANGE THIS INTERRUPT
+            #add logic to make popup on front end
+            continue
 
 if __name__ == "__main__":
     main_loop()
