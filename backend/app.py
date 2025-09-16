@@ -23,7 +23,7 @@ file_path = os.path.join(base_dir, "names.csv")
 
 with open(file_path, mode='r', encoding='utf-8-sig') as file:
     reader = csv.DictReader(file)
-    name_dictionary = {row["GTID"]: row["Name"] for row in reader}
+    name_dictionary = {row["GTID"]: (row["Name"], row["Instructor_Tag"]) for row in reader}
 
 db_connect = sqlite3.connect(DB, check_same_thread=False)
 
@@ -37,7 +37,8 @@ CREATE TABLE IF NOT EXISTS scans (
     gtid TEXT NOT NULL,
     name TEXT NOT NULL,
     action TEXT NOT NULL,
-    timestamp TEXT NOT NULL
+    timestamp TEXT NOT NULL,
+    instructor_tag TEXT NOT NULL
 )
 """
 
@@ -45,9 +46,9 @@ cursor.execute(query)
 
 db_connect.commit()
 
-def log_scan(gtid, name, action, timestamp):
-    cursor.execute("INSERT INTO scans (gtid, name, action, timestamp) VALUES (?, ?, ?, ?)", 
-                (gtid, name, action, timestamp))
+def log_scan(gtid, name, action, timestamp, instructor_tag):
+    cursor.execute("INSERT INTO scans (gtid, name, action, timestamp, instructor_tag) VALUES (?, ?, ?, ?, ?)", 
+                (gtid, name, action, timestamp, instructor_tag))
     db_connect.commit()
     #maybe connect to front end and put out a popup when this is triggered
 
@@ -73,17 +74,18 @@ def read_from_scanner():
         else:
             action_dictionary[gtid] = "CLOCK OUT"
 
-        name = name_dictionary[gtid]
+        name = name_dictionary[gtid][0]
+        instructor_tag = name_dictionary[gtid][1]
 
-    return gtid, name, action_dictionary[gtid], time_str
+    return gtid, name, action_dictionary[gtid], time_str, instructor_tag
 
 def main_loop():
     while True:
         try:
-            gtid, name, action_dictionary[gtid], time_str = read_from_scanner()
+            gtid, name, action, time_str, instructor_tag = read_from_scanner()
             if gtid == -1:
                 continue
-            log_scan(gtid, name, action_dictionary[gtid], time_str)
+            log_scan(gtid, name, action, time_str, instructor_tag)
         except KeyError: #CHANGE THIS INTERRUPT
             #add logic to make popup on front end
             continue
@@ -120,7 +122,6 @@ def scans():
         )
     """
     rows = db.execute(query).fetchall()
-    # print(rows[0])
     clocked_in_tas = [r[0] for r in rows if r[1] == "CLOCK IN"]
     return jsonify(clocked_in_tas)
 
