@@ -59,7 +59,7 @@ function App() {
   return (
     <div>
       <div 
-        style={{ display: "flex", alignItems: "center", gap: "10rem", marginBottom: "1rem" }}
+        style={{ display: "flex", alignItems: "center", gap: "7.6rem", marginBottom: "1rem" }}
       >
         <h1 className="left-header">
           CS2050 Office Hours

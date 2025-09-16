@@ -4,9 +4,10 @@ from datetime import datetime
 import csv
 import os
 from flask_cors import CORS  # pip install flask-cors (for dev)
-# from scan_to_db import log_scan, read_from_scanner, db_connect, action_dictionary, queue
 import json
 import threading
+from pynput import keyboard
+import re
 
 app = Flask(__name__)
 DB = "data/scans.db"
@@ -52,9 +53,13 @@ def log_scan(gtid, name, action, timestamp, instructor_tag):
     db_connect.commit()
     #maybe connect to front end and put out a popup when this is triggered
 
-def read_from_scanner():
-    gtid = input()
-    gtid = gtid[6:15] # extract gtid from string
+def read_from_scanner(gtid):
+    gtid = gtid[6:15] if len(gtid) >= 15 else gtid # extract gtid from string
+
+    # Normal GITD pattern
+    pattern = r"^\d{9}$"
+    if not re.match(pattern, gtid):
+        return -1, -1, -1, -1, -1
 
     # student scan, add to queue
     if gtid not in name_dictionary:
@@ -63,7 +68,7 @@ def read_from_scanner():
             queue.pop(0)
         else:
             queue.append(cropped_gtid)
-        return -1, -1, -1, -1
+        return -1, -1, -1, -1, -1
     else:
     #maybe split this into time and date
         time = datetime.now()
@@ -79,18 +84,36 @@ def read_from_scanner():
 
     return gtid, name, action_dictionary[gtid], time_str, instructor_tag
 
-def main_loop():
-    while True:
-        try:
-            gtid, name, action, time_str, instructor_tag = read_from_scanner()
-            if gtid == -1:
-                continue
-            log_scan(gtid, name, action, time_str, instructor_tag)
-        except KeyError: #CHANGE THIS INTERRUPT
-            #add logic to make popup on front end
-            continue
+scan_buffer = []
 
+def on_press(key):
+    global scan_buffer
+    try:
+        # Normal key (letters, numbers, etc.)
+        scan_buffer.append(key.char)
+    except AttributeError:
+        # Special keys (Enter, Shift, etc.)
+        if key == keyboard.Key.enter:
+            gtid = ''.join(scan_buffer)  # join characters into a string
+            scan_buffer = []             # clear buffer for next scan
+            # Example: extract GTID portion
+            gtid, name, action, time_str, instructor_tag = read_from_scanner(gtid) 
+            if gtid != -1:
+                log_scan(gtid, name, action, time_str, instructor_tag)
 
+listener = keyboard.Listener(on_press=on_press)
+listener.start()
+
+# def main_loop():
+#     while True:
+#         try:
+#             gtid, name, action, time_str, instructor_tag = read_from_scanner()
+#             if gtid == -1:
+#                 continue
+#             log_scan(gtid, name, action, time_str, instructor_tag)
+#         except KeyError: #CHANGE THIS INTERRUPT
+#             #add logic to make popup on front end
+#             continue
 
 # Helpers
 
@@ -130,8 +153,8 @@ def get_queue():
     return jsonify(queue)
 
 if __name__ == '__main__':
-    t = threading.Thread(target = main_loop, daemon = True)
-    t.start()
+    #t = threading.Thread(target = main_loop, daemon = True)
+    #t.start()
     
     app.run(debug=True, use_reloader=False, host='0.0.0.0')
 
