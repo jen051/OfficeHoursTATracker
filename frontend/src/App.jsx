@@ -12,9 +12,9 @@ export function Square() {
   )
 }
 
-export function Card({ title, children }) {
+export function Card({ title, children, className = "" }) {
   return (
-    <div className="card">
+    <div className={`card ${className}`}>
       <h2>{title}</h2>
       <div className="card-content">{children}</div>
     </div>
@@ -58,12 +58,26 @@ function App() {
 
   return (
     <div>
-      <h1 className='left-header'>
-        CS2050 Office Hours
-      </h1>
+      <div 
+        style={{ display: "flex", alignItems: "center", gap: "10rem", marginBottom: "1rem" }}
+      >
+        <h1 className="left-header">
+          CS2050 Office Hours
+        </h1>
+
+        <Card 
+        title="How to Use the Queue"
+        className="compact-card"> 
+          <p>Scan your Buzzcard at the front table scanner. 
+            It will record the last 4 digits of your Buzzcard and display them on the queue. 
+            When a TA calls your number, scan again to remove yourself from the queue!</p>
+        </Card>
+      </div>
       <div>
         <div style={{ display: "flex", gap: "1rem", minHeight: "400px" }}>
-          <Card title="Present TAs">{scans.length === 0 ? (
+          <Card 
+          title="Present TAs"
+          className="card">{scans.length === 0 ? (
           <p>No scans yet</p>
         ) : (
           <ul>
@@ -75,7 +89,9 @@ function App() {
           </ul>
         )}
         </Card>
-          <Card title="Queue">{queue.length === 0 ? (
+          <Card
+          title="Queue"
+          className="card">{queue.length === 0 ? (
           <p>No queue yet</p>
         ) : (
           <ul>
@@ -86,8 +102,9 @@ function App() {
             ))}
           </ul>
         )}</Card>
+        
+        
         </div>
-
       </div>
     </div>
   )

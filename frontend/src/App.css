@@ -25,13 +25,25 @@ body {
 }
 
 .card {
-  width: 250px;
+  width: 500px;
   background: #F2F4F3;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   padding: 1rem;
   margin: 1rem;
   transition: transform 0.2s ease;
+}
+
+.compact-card {
+  padding: 0.5rem;
+  width: 450px;
+  height: auto; /* shrink to fit content */
+  margin: 0; /* optional, remove extra spacing */
+}
+
+.compact-card p {
+  margin: 0;
+  font-size: 0.9rem;
 }
 
 .card:hover {
@@ -43,6 +55,8 @@ body {
   font-size: 1.25rem;
   color: #444;
 }
+
+
 
 .card-content {
   font-size: 0.95rem;
