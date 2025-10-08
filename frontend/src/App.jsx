@@ -4,7 +4,7 @@ import viteLogo from '/vite.svg'
 import './App.css'
 
 
-// Element Functinos
+// Element Functions
 
 export function Square() {
   return (
@@ -22,6 +22,29 @@ export function Card({ title, children, className = "" }) {
 }
 
 function App() {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    console.log("submitted")
+
+    const form = e.target;
+    const formData = new FormData(form);
+
+    const formJson = Object.fromEntries(formData.entries());
+    console.log(formJson);
+
+    fetch("/api/manual-scan", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(formJson)
+    })
+    .then(res => res.json())
+    .then(data => console.log("Flask response:", data))
+    .catch(err => console.error("Error:", err));
+  }
+
   const [scans, setScans] = useState([])
   const [queue, setQueue] = useState([])
 
@@ -68,7 +91,7 @@ function App() {
         <Card 
         title="How to Use the Queue"
         className="compact-card"> 
-          <p>Scan your Buzzcard at the front table scanner. 
+          <p>Scan your Buzzcard at the front table scanner or input your GTID in the text box. 
             It will record the last 4 digits of your Buzzcard and display them on the queue. 
             When a TA calls your number, scan again to remove yourself from the queue!</p>
         </Card>
@@ -103,9 +126,18 @@ function App() {
           </ul>
         )}</Card>
         
-        
+
         </div>
-      </div>
+          <div>
+            <form onSubmit={handleSubmit}>
+              <label>
+                Input GTID Here: <input name="gtid" />
+              </label>
+              <button type="reset">Reset</button>
+              <button type="submit">Submit GTID</button>
+            </form>
+          </div>
+        </div>
     </div>
   )
 }

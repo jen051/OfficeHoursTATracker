@@ -1,19 +1,58 @@
-from flask import Flask, jsonify, g
+from flask import Flask, jsonify, g, request
 import sqlite3
 from datetime import datetime
 import csv
 import os
 from flask_cors import CORS  # pip install flask-cors (for dev)
 import json
+import random
 import threading
+#from endev import InputDevice, list_devices, ecodes
 from pynput import keyboard
 import re
 
 app = Flask(__name__)
+app.config['CORS_HEADERS'] = 'Content-Type'
 DB = "data/scans.db"
 
 action_dictionary = {}
 queue = []
+i = 0
+
+random_dict = {}
+
+random_names = [
+    "Anonymous Werewolf",
+    "Anonymous Mummy",
+    "Anonymous Skeleton",
+    "Anonymous Saja Boy",
+    "Anonymous Vampire",
+    "Anonymous Zombie",
+    "Anonymous Ghost",
+    "Anonymous Witch",
+    "Anonymous Goblin",
+    "Anonymous Phantom",
+    "Anonymous Troll",
+    "Anonymous Banshee",
+    "Anonymous Kraken",
+    "Anonymous Elf",
+    "Anonymous Warlock",
+    "Anonymous Demon",
+    "Anonymous Lich",
+    "Anonymous Ogre",
+    "Anonymous Specter",
+    "Anonymous Harpy",
+    "Anonymous Shade",
+    "Anonymous Golem",
+    "Anonymous Wraith",
+    "Anonymous Reaper",
+    "Anonymous Imp",
+    "Anonymous Siren",
+    "Anonymous Centaur",
+    "Anonymous Chimera",
+    "Anonymous Djinn",
+    "Anonymous Basilisk"
+]
 
 # Scanning Process
 
@@ -63,11 +102,14 @@ def read_from_scanner(gtid):
 
     # student scan, add to queue
     if gtid not in name_dictionary:
-        cropped_gtid = gtid[-4:]
-        if cropped_gtid in queue:
+        if gtid not in random_dict:
+            random_dict[gtid] = random.choice(random_names)
+
+        if random_dict[gtid] in queue:
             queue.pop(0)
+            random_dict.pop(gtid)
         else:
-            queue.append(cropped_gtid)
+            queue.append(random_dict[gtid])
         return -1, -1, -1, -1, -1
     else:
     #maybe split this into time and date
@@ -102,6 +144,7 @@ def on_press(key):
                 log_scan(gtid, name, action, time_str, instructor_tag)
 
 listener = keyboard.Listener(on_press=on_press)
+#listener.daemon = True
 listener.start()
 
 # def main_loop():
@@ -130,6 +173,17 @@ def close_db(exception):
 
 
 CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+@app.route("/api/manual-scan", methods=["POST"])
+def manual_scan():
+    gtid = request.get_json()["gtid"]
+    print("Received JSON:", gtid)
+    gtid, name, action, time_str, instructor_tag = read_from_scanner(gtid) 
+    if gtid != -1:
+       log_scan(gtid, name, action, time_str, instructor_tag)
+    print(jsonify({"status": "success"}))
+    return jsonify({"status": "success"})
+
 
 @app.get("/api/scans")
 def scans():

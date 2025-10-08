@@ -1,3 +1,4 @@
 flask
-pynput
+endev
 react
+flask-cors
