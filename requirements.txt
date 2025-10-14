@@ -1,4 +1,0 @@
-flask
-endev
-react
-flask-cors

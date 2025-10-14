@@ -209,8 +209,9 @@ def get_queue():
 if __name__ == '__main__':
     #t = threading.Thread(target = main_loop, daemon = True)
     #t.start()
-    
-    app.run(debug=True, use_reloader=False, host='0.0.0.0')
+    port = int(os.environ.get("PORT", 8080))
+
+    app.run(debug=True, use_reloader=False, host='0.0.0.0',port=port)
 
 # SQLite database/backend
 # store: gtid, timestamps, autolabel clock in/out, map gtid to name, 
