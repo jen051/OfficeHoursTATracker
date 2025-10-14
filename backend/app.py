@@ -25,7 +25,6 @@ random_dict = {}
 
 random_names = []
 with open("data/random_names.txt", "r") as f:
-    # Strip newline characters and make a list
     random_names = [line.strip() for line in f if line.strip()]
 
 time_heap = []
@@ -99,7 +98,7 @@ def read_from_scanner(gtid):
         else:
             action_dictionary[gtid] = "CLOCK OUT"
 
-        name = name_dictionary[gtid][0]
+        name = f"{name_dictionary[gtid][0]} ({name_dictionary[gtid][1]})"
         instructor_tag = name_dictionary[gtid][1]
 
     return gtid, name, action_dictionary[gtid], time_str, instructor_tag
