@@ -82,24 +82,20 @@ function App() {
   return (
     <div>
       <div 
-        style={{ display: "flex", alignItems: "center", gap: "7.6rem", marginBottom: "1rem" }}
+        style={{textAlign: "center", alignItems: "center", gap: "2rem", marginBottom: "0.25rem", marginTop: 0 }}
       >
-        <h1 className="left-header">
+        <h1>
           CS2050 Office Hours
         </h1>
-
-        <Card 
-        title="How to Use the Queue"
-        className="compact-card"> 
-          <p>Scan your Buzzcard at the front table scanner or input your GTID in the text box. 
-            It will record the last 4 digits of your Buzzcard and display them on the queue. 
-            When a TA calls your number, scan again to remove yourself from the queue!</p>
-        </Card>
+        <p>Input your GTID in the text box and it will map you to an anonymous name.
+            When a TA calls your name, reenter your GTID to dequeue yourself!</p>
       </div>
+     
       <div>
         <div style={{ display: "flex", gap: "1rem", minHeight: "400px" }}>
           <Card 
           title="Present TAs"
+          style={{ flex: 1 }}
           className="card">{scans.length === 0 ? (
           <p>No scans yet</p>
         ) : (
@@ -114,6 +110,7 @@ function App() {
         </Card>
           <Card
           title="Queue"
+          style={{ flex: 1 }}
           className="card">{queue.length === 0 ? (
           <p>No queue yet</p>
         ) : (
@@ -126,18 +123,19 @@ function App() {
           </ul>
         )}</Card>
         
-
         </div>
-          <div>
+        <div className="center-div">
             <form onSubmit={handleSubmit}>
-              <label>
-                Input GTID Here: <input name="gtid" />
-              </label>
-              <button type="reset">Reset</button>
-              <button type="submit">Submit GTID</button>
+              <label htmlFor="gtid">Input GTID Here:</label>
+              <input id="gtid" name="gtid" />
+
+              <div className="button-group">
+                <button type="reset">Reset</button>
+                <button type="submit">Submit GTID</button>
+              </div>
             </form>
           </div>
-        </div>
+      </div>
     </div>
   )
 }

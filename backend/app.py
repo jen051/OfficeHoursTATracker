@@ -7,6 +7,8 @@ from flask_cors import CORS  # pip install flask-cors (for dev)
 import json
 import random
 import threading
+import heapq
+import time
 #from endev import InputDevice, list_devices, ecodes
 #from pynput import keyboard
 import re
@@ -21,38 +23,13 @@ i = 0
 
 random_dict = {}
 
-random_names = [
-    "Anonymous Werewolf",
-    "Anonymous Mummy",
-    "Anonymous Skeleton",
-    "Anonymous Saja Boy",
-    "Anonymous Vampire",
-    "Anonymous Zombie",
-    "Anonymous Ghost",
-    "Anonymous Witch",
-    "Anonymous Goblin",
-    "Anonymous Phantom",
-    "Anonymous Troll",
-    "Anonymous Banshee",
-    "Anonymous Kraken",
-    "Anonymous Elf",
-    "Anonymous Warlock",
-    "Anonymous Demon",
-    "Anonymous Lich",
-    "Anonymous Ogre",
-    "Anonymous Specter",
-    "Anonymous Harpy",
-    "Anonymous Shade",
-    "Anonymous Golem",
-    "Anonymous Wraith",
-    "Anonymous Reaper",
-    "Anonymous Imp",
-    "Anonymous Siren",
-    "Anonymous Centaur",
-    "Anonymous Chimera",
-    "Anonymous Djinn",
-    "Anonymous Basilisk"
-]
+random_names = []
+with open("random_names.txt", "r") as f:
+    # Strip newline characters and make a list
+    random_names = [line.strip() for line in f if line.strip()]
+
+time_heap = []
+THRESHOLD = 25 * 60 
 
 # Scanning Process
 
@@ -110,6 +87,7 @@ def read_from_scanner(gtid):
             random_dict.pop(gtid)
         else:
             queue.append(random_dict[gtid])
+            time_heap.heappush((datetime.now(), random_dict[gtid]))
         return -1, -1, -1, -1, -1
     else:
     #maybe split this into time and date
@@ -126,7 +104,18 @@ def read_from_scanner(gtid):
 
     return gtid, name, action_dictionary[gtid], time_str, instructor_tag
 
-scan_buffer = []
+
+def cleanup_queue():
+    while time_heap and datetime.now() - time_heap[0][0] > THRESHOLD:
+        timestamp, name = heapq.heappop(time_heap)
+        print(f"Removed {name} from queue due to timeout")
+
+def periodic_cleanup():
+    while True:
+        cleanup_queue()
+        time.sleep(60)
+
+#scan_buffer = []
 
 # def on_press(key):
 #     global scan_buffer
@@ -207,8 +196,8 @@ def get_queue():
     return jsonify(queue)
 
 if __name__ == '__main__':
-    #t = threading.Thread(target = main_loop, daemon = True)
-    #t.start()
+    thread = threading.Thread(target=periodic_cleanup, daemon=True)
+    thread.start()
     port = int(os.environ.get("PORT", 8080))
 
     app.run(debug=True, use_reloader=False, host='0.0.0.0',port=port)

@@ -25,6 +25,7 @@ body {
 }
 
 .card {
+  height: 300px;
   width: 500px;
   background: #F2F4F3;
   border-radius: 12px;
@@ -32,6 +33,11 @@ body {
   padding: 1rem;
   margin: 1rem;
   transition: transform 0.2s ease;
+}
+
+.center-div {
+  width: 50%;
+  margin: 0 auto;
 }
 
 .compact-card {
@@ -54,6 +60,18 @@ body {
   margin: 0 0 0.5rem;
   font-size: 1.25rem;
   color: #444;
+}
+
+form {
+  display: flex;
+  flex-direction: column; /* stack children vertically */
+  gap: 10px; /* spacing between input and buttons */
+  align-items: center; /* center horizontally */
+}
+
+.button-group {
+  display: flex;
+  gap: 10px; /* spacing between buttons */
 }
 
 
@@ -99,10 +117,3 @@ body {
   color: #888;
 }
 
-#Headers
-
-.left-header {
-  text-align: left;
-  font-size: 2rem; 
-  margin-left: 10px;
-}
