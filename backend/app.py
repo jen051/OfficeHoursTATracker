@@ -24,7 +24,7 @@ i = 0
 random_dict = {}
 
 random_names = []
-with open("random_names.txt", "r") as f:
+with open("data/random_names.txt", "r") as f:
     # Strip newline characters and make a list
     random_names = [line.strip() for line in f if line.strip()]
 
