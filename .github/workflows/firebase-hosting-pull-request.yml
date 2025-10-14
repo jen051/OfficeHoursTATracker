@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build React
         working-directory: ./frontend
-        run: npm run build
+        run: npm install && npm run build
       
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
