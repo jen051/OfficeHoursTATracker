@@ -8,7 +8,7 @@ import json
 import random
 import threading
 #from endev import InputDevice, list_devices, ecodes
-from pynput import keyboard
+#from pynput import keyboard
 import re
 
 app = Flask(__name__)
@@ -128,24 +128,24 @@ def read_from_scanner(gtid):
 
 scan_buffer = []
 
-def on_press(key):
-    global scan_buffer
-    try:
-        # Normal key (letters, numbers, etc.)
-        scan_buffer.append(key.char)
-    except AttributeError:
-        # Special keys (Enter, Shift, etc.)
-        if key == keyboard.Key.enter:
-            gtid = ''.join(scan_buffer)  # join characters into a string
-            scan_buffer = []             # clear buffer for next scan
-            # Example: extract GTID portion
-            gtid, name, action, time_str, instructor_tag = read_from_scanner(gtid) 
-            if gtid != -1:
-                log_scan(gtid, name, action, time_str, instructor_tag)
+# def on_press(key):
+#     global scan_buffer
+#     try:
+#         # Normal key (letters, numbers, etc.)
+#         scan_buffer.append(key.char)
+#     except AttributeError:
+#         # Special keys (Enter, Shift, etc.)
+#         if key == keyboard.Key.enter:
+#             gtid = ''.join(scan_buffer)  # join characters into a string
+#             scan_buffer = []             # clear buffer for next scan
+#             # Example: extract GTID portion
+#             gtid, name, action, time_str, instructor_tag = read_from_scanner(gtid) 
+#             if gtid != -1:
+#                 log_scan(gtid, name, action, time_str, instructor_tag)
 
-listener = keyboard.Listener(on_press=on_press)
+#listener = keyboard.Listener(on_press=on_press)
 #listener.daemon = True
-listener.start()
+#listener.start()
 
 # def main_loop():
 #     while True:

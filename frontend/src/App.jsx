@@ -33,7 +33,7 @@ function App() {
     const formJson = Object.fromEntries(formData.entries());
     console.log(formJson);
 
-    fetch("/api/manual-scan", {
+    fetch("https://officehourstatracker.onrender.com/api/manual-scan", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -51,7 +51,7 @@ function App() {
   useEffect(() => {
     console.log("Fetching scans from API...")
     const fetchScans = () => {
-      fetch('/api/scans')
+      fetch('https://officehourstatracker.onrender.com/api/scans')
       .then(r => r.json())
       .then(d => {
       console.log("API response:", d);
@@ -67,7 +67,7 @@ function App() {
   useEffect(() => {
     console.log("Fetching queue from API...")
     const fetchQueue = () => {
-    fetch('/api/queue')
+    fetch('https://officehourstatracker.onrender.com/api/queue')
       .then(r => r.json())
       .then(d => {
       setQueue(d);
