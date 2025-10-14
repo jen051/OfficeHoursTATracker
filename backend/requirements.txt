@@ -1,5 +1,4 @@
 flask
-endev
 react
 flask-cors
 gunicorn==20.1.0
