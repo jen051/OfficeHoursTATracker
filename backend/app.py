@@ -81,12 +81,15 @@ def read_from_scanner(gtid):
         if gtid not in random_dict:
             random_dict[gtid] = random.choice(random_names)
 
-        if random_dict[gtid] in queue:
+        random_name = random_dict[gtid]
+
+        if random_name in queue:
             queue.pop(0)
             random_dict.pop(gtid)
         else:
-            queue.append(random_dict[gtid])
-            time_heap.heappush((datetime.now(), random_dict[gtid]))
+            queue.append(random_name)
+            heapq.heappush(time_heap, (datetime.now(), random_name)) # heap fix
+            return -1, random_name, -1, -1, -1
         return -1, -1, -1, -1, -1
     else:
     #maybe split this into time and date
@@ -166,11 +169,13 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 def manual_scan():
     gtid = request.get_json()["gtid"]
     print("Received JSON:", gtid)
+    response = {"status": "success"}
     gtid, name, action, time_str, instructor_tag = read_from_scanner(gtid) 
     if gtid != -1:
        log_scan(gtid, name, action, time_str, instructor_tag)
-    print(jsonify({"status": "success"}))
-    return jsonify({"status": "success"})
+    elif name != 1:
+        response["random_name"] = name
+    return jsonify(response)
 
 
 @app.get("/api/scans")
