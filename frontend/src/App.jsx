@@ -31,7 +31,8 @@ function App() {
     const formData = new FormData(form);
 
     const formJson = Object.fromEntries(formData.entries());
-    console.log(formJson);
+
+    
 
     fetch("https://officehourstatracker.onrender.com/api/manual-scan", {
     method: "POST",
@@ -41,7 +42,10 @@ function App() {
     body: JSON.stringify(formJson)
     })
     .then(res => res.json())
-    .then(data => console.log("Flask response:", data))
+    .then(data => {
+    if (data.random_name) {
+      setConfirmation(`You’ve been added to the queue as ${data.random_name}`);
+    }})
     .catch(err => console.error("Error:", err));
   }
 
