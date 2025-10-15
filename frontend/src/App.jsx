@@ -21,6 +21,8 @@ export function Card({ title, children, className = "" }) {
 function App() {
   const [confirmation, setConfirmation] = useState("");
   const [gtid, setGtid] = useState("")
+  const [inQueue, setInQueue] = useState(false);
+  const [hash, setHash] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -56,31 +58,43 @@ function App() {
   const buttonSubmit = (e) => {
     e.preventDefault();
 
-    console.log("submitted")
-
-    const form = e.target;
-    const formData = new FormData(form);
-
-    const formJson = Object.fromEntries(formData.entries());
-
-    fetch("https://officehourstatracker.onrender.com/api/button-queue", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(formJson)
+    if (!inQueue) {
+      fetch("https://officehourstatracker.onrender.com/api/button-queue", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({})
+      })
+      .then(res => res.json())
+      .then(data => {
+        setInQueue(true);
+        setHash(data.hash);
+        if (data.random_name && data.random_name != -1) {
+          setConfirmation(`You’ve been added to the queue as ${data.random_name}`);
+        } else if (data.random_name == -1) {
+          setConfirmation(`You’ve been removed from the queue`);
+        }
     })
-    .then(res => res.json())
-    .then(data => {
-    if (data.random_name && data.random_name != -1) {
-      setConfirmation(`You’ve been added to the queue as ${data.random_name}`);
-    } else if (data.random_name == -1) {
-      setConfirmation(`You’ve been removed from the queue`);
-    }
-  })
-    .catch(err => console.error("Error:", err));
+      .catch(err => console.error("Error:", err));
 
-    setTimeout(() => setConfirmation(""), 3000);
+      setTimeout(() => setConfirmation(""), 3000);
+    } else {
+        fetch("https://officehourstatracker.onrender.com/api/dequeue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hash })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") {
+          setInQueue(false);
+          setHash(null);
+          setConfirmation(`Dequeued ${data.removed_name}`);
+        }
+      })
+      .catch(err => console.error(err));
+    }
   }
 
   const [scans, setScans] = useState([])

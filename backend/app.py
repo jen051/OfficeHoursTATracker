@@ -78,11 +78,11 @@ def enqueue_no_id():
         if random_name in queue:
             queue.pop(0)
             random_dict.pop(hash)
-            return -1
+            return -1, -1
         else:
             queue.append(random_name)
-            heapq.heappush(time_heap, (datetime.now(), random_name))
-            return random_name
+            heapq.heappush(time_heap, (datetime.now(), hash))
+            return random_name, hash
 
 def read_from_scanner(gtid):
     gtid = gtid[6:15] if len(gtid) >= 15 else gtid # extract gtid from string
@@ -125,8 +125,10 @@ def read_from_scanner(gtid):
 
 def cleanup_queue():
     while time_heap and (datetime.now() - time_heap[0][0]).total_seconds() > THRESHOLD:
-        timestamp, name = heapq.heappop(time_heap)
-        print(f"Removed {name} from queue due to timeout")
+        _, hash = heapq.heappop(time_heap)
+        random_dict.pop(hash)
+        queue.remove(random_dict[hash])
+        print(f"Removed {random_dict[hash]} from queue due to timeout")
 
 def periodic_cleanup():
     while True:
@@ -196,10 +198,25 @@ def manual_scan():
 @app.route("/api/button-queue", methods=["POST"])
 def button_queue():
     response = {"status": "success"}
-    name = enqueue_no_id() 
+    name, hash = enqueue_no_id() 
     if name != 1:
         response["random_name"] = name
+        response["hash"] = hash
     return jsonify(response)
+
+@app.route("/api/dequeue", methods=["POST"])
+def dequeue():
+    data = request.get_json()
+    hash = data.get("hash")
+
+    if hash in random_dict:
+        name = random_dict.pop(hash)
+        if name in queue:
+            queue.remove(name) 
+        global time_heap
+        time_heap = [t for t in time_heap if t[1] != hash]
+        return jsonify({"status": "success", "removed_name": name})
+    return jsonify({"status": "error", "message": "Token not found"}), 404
 
 
 @app.get("/api/scans")
