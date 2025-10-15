@@ -20,6 +20,7 @@ export function Card({ title, children, className = "" }) {
 
 function App() {
   const [confirmation, setConfirmation] = useState("");
+  const [gtid, setGtid] = useState("")
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -30,8 +31,6 @@ function App() {
     const formData = new FormData(form);
 
     const formJson = Object.fromEntries(formData.entries());
-
-    
 
     fetch("https://officehourstatracker.onrender.com/api/manual-scan", {
     method: "POST",
@@ -51,6 +50,7 @@ function App() {
     .catch(err => console.error("Error:", err));
 
     setTimeout(() => setConfirmation(""), 3000);
+    setGtid("");
   }
 
   const [scans, setScans] = useState([])
@@ -88,7 +88,7 @@ function App() {
   }, [])
 
   return (
-    <div>
+    <div className="app-container">
       <div 
         style={{textAlign: "center", alignItems: "center", gap: "2rem", marginBottom: "0.25rem", marginTop: 0 }}
       >
@@ -100,48 +100,45 @@ function App() {
       </div>
      
       <div>
-        <div style={{ display: "flex", gap: "1rem", minHeight: "400px" }}>
+        <div className='cards-row'>
           <Card 
-          title="Present TAs"
-          style={{ flex: 1 }}
-          className="card">{scans.length === 0 ? (
-          <p>No scans yet</p>
-        ) : (
-          <ul>
-            {scans.map(scan => (
-              <li key={scan.id}>
-                {scan}
-              </li>
-            ))}
-          </ul>
-        )}
-        </Card>
+            title="Present TAs"
+            className="card">{scans.length === 0 ? (
+            <p>No scans yet</p>
+          ) : (
+            <ul>
+              {scans.map(scan => (
+                <li key={scan.id}>
+                  {scan}
+                </li>
+              ))}
+            </ul>
+          )}
+          </Card>
           <Card
-          title="Queue"
-          style={{ flex: 1 }}
-          className="card">{queue.length === 0 ? (
-          <p>No queue yet</p>
-        ) : (
-          <ul>
-            {queue.map(queue_element => (
-              <li key={queue_element.id}>
-                {queue_element}
-              </li>
-            ))}
-          </ul>
-        )}</Card>
+            title="Queue"
+            className="card">{queue.length === 0 ? (
+            <p>No queue yet</p>
+          ) : (
+            <ul>
+              {queue.map(queue_element => (
+                <li key={queue_element.id}>
+                  {queue_element}
+                </li>
+              ))}
+            </ul>
+          )}</Card>
         
         </div>
         <div className="center-div">
             <form onSubmit={handleSubmit}>
+              {confirmation && <p className="confirmation">{confirmation}</p>}
               <label htmlFor="gtid" style={{ color: "#F2F4F3" }}>Input GTID Here:</label>
-              <input id="gtid" name="gtid" />
-
+              <input id="gtid" name="gtid" autocomplete="off" value={gtid} onChange={e => setGtid(e.target.value)}/>
               <div className="button-group">
-                <button type="reset">Reset</button>
+                <button type="reset" onClick={() => setGtid("")}>Reset</button>
                 <button type="submit">Submit GTID</button>
               </div>
-              {confirmation && <p className="confirmation">{confirmation}</p>}
             </form>
           </div>
       </div>

@@ -25,7 +25,8 @@ body {
 }
 
 .card {
-  width: 100%;
+  width: auto;
+  height: auto;
   min-width: 400px;
   min-height: 200px;
   background: #F2F4F3;
@@ -34,7 +35,7 @@ body {
   padding: 1rem;
   margin: 1rem;
   transition: transform 0.2s ease;
-  flex: 1; 
+  /* flex: 1 1 45%;  */
 }
 
 .center-div {
@@ -42,11 +43,22 @@ body {
   margin: 0 auto;
 }
 
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 2rem;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
 .compact-card {
   padding: 0.5rem;
-  width: 500px;
-  height: auto; /* shrink to fit content */
-  margin: 0; /* optional, remove extra spacing */
+  width: auto;
+  height: auto;
+  margin: 0;
 }
 
 .compact-card p {
@@ -56,6 +68,14 @@ body {
 
 .card:hover {
   transform: translateY(-5px);
+}
+
+.cards-row {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .card h2 {
