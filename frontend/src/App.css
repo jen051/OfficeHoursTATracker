@@ -28,7 +28,7 @@ body {
   width: auto;
   height: auto;
   min-width: 400px;
-  min-height: 200px;
+  min-height: 500px;
   background: #F2F4F3;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -96,7 +96,9 @@ form {
   gap: 10px; /* spacing between buttons */
 }
 
-
+p {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+}
 
 .card-content {
   font-size: clamp(1rem, 2vw, 1.5rem);

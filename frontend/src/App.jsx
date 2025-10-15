@@ -78,7 +78,6 @@ function App() {
     })
       .catch(err => console.error("Error:", err));
 
-      setTimeout(() => setConfirmation(""), 3000);
     } else {
         fetch("https://officehourstatracker.onrender.com/api/dequeue", {
         method: "POST",
@@ -139,8 +138,8 @@ function App() {
         <h1 style={{ color: "#F2F4F3" }}>
           CS2050 Office Hours
         </h1>
-        <p style={{ color: "#F2F4F3" }}>Input your GTID in the text box and it will map you to an anonymous name.
-            When a TA calls your name, reenter your GTID to dequeue yourself!</p>
+        <p style={{ color: "#F2F4F3" }}>Students: Click the button to add yourself to the queue.</p>
+        <p style={{ color: "#F2F4F3" }}>TAs: Input your GTID to sign in.</p>
       </div>
      
       <div>
@@ -175,19 +174,23 @@ function App() {
         
         </div>
         <div className="center-div">
-            <form onSubmit={handleSubmit}>
+          
+            <form onSubmit={buttonSubmit} style={{ marginBottom: "1.5rem" }}>
               {confirmation && <p className="confirmation">{confirmation}</p>}
+              <label htmlFor="gtid" style={{ color: "#F2F4F3" }}>Students: Press this button!</label>
+              <div className="button-group">
+                <button type="submit">
+                  {inQueue ? "Dequeue" : "Enqueue"}
+                </button>
+              </div>
+            </form>
+
+            <form onSubmit={handleSubmit}>
               <label htmlFor="gtid" style={{ color: "#F2F4F3" }}>TAs: Input GTID Here:</label>
               <input id="gtid" name="gtid" autocomplete="off" value={gtid} onChange={e => setGtid(e.target.value)}/>
               <div className="button-group">
                 <button type="reset" onClick={() => setGtid("")}>Reset</button>
                 <button type="submit">Submit GTID</button>
-              </div>
-            </form>
-            <form onSubmit={buttonSubmit}>
-              {confirmation && <p className="confirmation">{confirmation}</p>}
-              <div className="button-group">
-                <button type="submit">Queue</button>
               </div>
             </form>
           </div>
