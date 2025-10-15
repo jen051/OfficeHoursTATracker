@@ -42,9 +42,12 @@ function App() {
     })
     .then(res => res.json())
     .then(data => {
-    if (data.random_name) {
+    if (data.random_name && data.random_name != -1) {
       setConfirmation(`You’ve been added to the queue as ${data.random_name}`);
-    }})
+    } else if (data.random_name == -1) {
+      setConfirmation(`You’ve been removed from the queue`);
+    }
+  })
     .catch(err => console.error("Error:", err));
 
     setTimeout(() => setConfirmation(""), 3000);
