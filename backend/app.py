@@ -108,7 +108,7 @@ def read_from_scanner(gtid):
 
 
 def cleanup_queue():
-    while time_heap and datetime.now() - time_heap[0][0] > THRESHOLD:
+    while time_heap and (datetime.now() - time_heap[0][0]).total_seconds() > THRESHOLD:
         timestamp, name = heapq.heappop(time_heap)
         print(f"Removed {name} from queue due to timeout")
 
