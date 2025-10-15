@@ -3,9 +3,6 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-
-const [confirmation, setConfirmation] = useState("");
-
 export function Square() {
   return (
     <div className="square"></div>
@@ -22,6 +19,8 @@ export function Card({ title, children, className = "" }) {
 }
 
 function App() {
+  const [confirmation, setConfirmation] = useState("");
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
