@@ -92,10 +92,10 @@ function App() {
       <div 
         style={{textAlign: "center", alignItems: "center", gap: "2rem", marginBottom: "0.25rem", marginTop: 0 }}
       >
-        <h1 color="#F2F4F3">
+        <h1 style={{ color: "#F2F4F3" }}>
           CS2050 Office Hours
         </h1>
-        <p>Input your GTID in the text box and it will map you to an anonymous name.
+        <p style={{ color: "#F2F4F3" }}>Input your GTID in the text box and it will map you to an anonymous name.
             When a TA calls your name, reenter your GTID to dequeue yourself!</p>
       </div>
      
@@ -134,7 +134,7 @@ function App() {
         </div>
         <div className="center-div">
             <form onSubmit={handleSubmit}>
-              <label htmlFor="gtid">Input GTID Here:</label>
+              <label htmlFor="gtid" style={{ color: "#F2F4F3" }}>Input GTID Here:</label>
               <input id="gtid" name="gtid" />
 
               <div className="button-group">
