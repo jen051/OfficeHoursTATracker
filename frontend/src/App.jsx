@@ -53,6 +53,36 @@ function App() {
     setGtid("");
   }
 
+  const buttonSubmit = (e) => {
+    e.preventDefault();
+
+    console.log("submitted")
+
+    const form = e.target;
+    const formData = new FormData(form);
+
+    const formJson = Object.fromEntries(formData.entries());
+
+    fetch("https://officehourstatracker.onrender.com/api/button-queue", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(formJson)
+    })
+    .then(res => res.json())
+    .then(data => {
+    if (data.random_name && data.random_name != -1) {
+      setConfirmation(`You’ve been added to the queue as ${data.random_name}`);
+    } else if (data.random_name == -1) {
+      setConfirmation(`You’ve been removed from the queue`);
+    }
+  })
+    .catch(err => console.error("Error:", err));
+
+    setTimeout(() => setConfirmation(""), 3000);
+  }
+
   const [scans, setScans] = useState([])
   const [queue, setQueue] = useState([])
 
@@ -88,7 +118,7 @@ function App() {
   }, [])
 
   return (
-    <div className="app-container">
+    <div>
       <div 
         style={{textAlign: "center", alignItems: "center", gap: "2rem", marginBottom: "0.25rem", marginTop: 0 }}
       >
@@ -133,11 +163,17 @@ function App() {
         <div className="center-div">
             <form onSubmit={handleSubmit}>
               {confirmation && <p className="confirmation">{confirmation}</p>}
-              <label htmlFor="gtid" style={{ color: "#F2F4F3" }}>Input GTID Here:</label>
+              <label htmlFor="gtid" style={{ color: "#F2F4F3" }}>TAs: Input GTID Here:</label>
               <input id="gtid" name="gtid" autocomplete="off" value={gtid} onChange={e => setGtid(e.target.value)}/>
               <div className="button-group">
                 <button type="reset" onClick={() => setGtid("")}>Reset</button>
                 <button type="submit">Submit GTID</button>
+              </div>
+            </form>
+            <form onSubmit={buttonSubmit}>
+              {confirmation && <p className="confirmation">{confirmation}</p>}
+              <div className="button-group">
+                <button type="submit">Queue</button>
               </div>
             </form>
           </div>

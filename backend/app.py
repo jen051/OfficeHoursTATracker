@@ -68,6 +68,22 @@ def log_scan(gtid, name, action, timestamp, instructor_tag):
     db_connect.commit()
     #maybe connect to front end and put out a popup when this is triggered
 
+def enqueue_no_id():
+    hash = random.randint(1, 1000000)
+    if hash not in random_dict:
+        random_dict[hash] = random.choice(random_names)
+
+        random_name = random_dict[hash]
+
+        if random_name in queue:
+            queue.pop(0)
+            random_dict.pop(hash)
+            return -1
+        else:
+            queue.append(random_name)
+            heapq.heappush(time_heap, (datetime.now(), random_name))
+            return random_name
+
 def read_from_scanner(gtid):
     gtid = gtid[6:15] if len(gtid) >= 15 else gtid # extract gtid from string
 
@@ -174,6 +190,14 @@ def manual_scan():
     if gtid != -1:
        log_scan(gtid, name, action, time_str, instructor_tag)
     elif name != 1:
+        response["random_name"] = name
+    return jsonify(response)
+
+@app.route("/api/button-queue", methods=["POST"])
+def button_queue():
+    response = {"status": "success"}
+    name = enqueue_no_id() 
+    if name != 1:
         response["random_name"] = name
     return jsonify(response)
 
