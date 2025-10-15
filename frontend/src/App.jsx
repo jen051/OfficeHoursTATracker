@@ -92,7 +92,7 @@ function App() {
       <div 
         style={{textAlign: "center", alignItems: "center", gap: "2rem", marginBottom: "0.25rem", marginTop: 0 }}
       >
-        <h1>
+        <h1 color="#F2F4F3">
           CS2050 Office Hours
         </h1>
         <p>Input your GTID in the text box and it will map you to an anonymous name.
