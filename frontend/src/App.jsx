@@ -4,7 +4,7 @@ import viteLogo from '/vite.svg'
 import './App.css'
 
 
-// Element Functions
+const [confirmation, setConfirmation] = useState("");
 
 export function Square() {
   return (
@@ -47,6 +47,8 @@ function App() {
       setConfirmation(`You’ve been added to the queue as ${data.random_name}`);
     }})
     .catch(err => console.error("Error:", err));
+
+    setTimeout(() => setConfirmation(""), 3000);
   }
 
   const [scans, setScans] = useState([])
@@ -137,6 +139,7 @@ function App() {
                 <button type="reset">Reset</button>
                 <button type="submit">Submit GTID</button>
               </div>
+              {confirmation && <p className="confirmation">{confirmation}</p>}
             </form>
           </div>
       </div>
