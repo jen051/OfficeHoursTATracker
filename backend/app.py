@@ -9,6 +9,8 @@ import random
 import threading
 import heapq
 import time
+import hashlib
+import socket
 #from endev import InputDevice, list_devices, ecodes
 #from pynput import keyboard
 import re
@@ -68,8 +70,8 @@ def log_scan(gtid, name, action, timestamp, instructor_tag):
     db_connect.commit()
     #maybe connect to front end and put out a popup when this is triggered
 
-def enqueue_no_id():
-    hash = random.randint(1, 1000000)
+def enqueue_no_id(ip_address):
+    hash = int(hashlib.sha256(ip_address.encode()).hexdigest(), 16) % (10**8)
     if hash not in random_dict:
         random_dict[hash] = random.choice(random_names)
 
@@ -197,8 +199,9 @@ def manual_scan():
 
 @app.route("/api/button-queue", methods=["POST"])
 def button_queue():
+    ip_address = request.remote_addr 
     response = {"status": "success"}
-    name, hash = enqueue_no_id() 
+    name, hash = enqueue_no_id(ip_address) 
     if name != 1:
         response["random_name"] = name
         response["hash"] = hash
