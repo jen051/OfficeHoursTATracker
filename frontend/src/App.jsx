@@ -58,6 +58,12 @@ function App() {
   const buttonSubmit = (e) => {
     e.preventDefault();
 
+    useEffect(() => {
+    axios.get("/api/in-queue-status")
+      .then(res => setInQueue(res.data.in_queue))
+      .catch(err => console.error(err));
+    }, []);
+
     if (!inQueue) {
       fetch("https://officehourstatracker.onrender.com/api/button-queue", {
       method: "POST",
