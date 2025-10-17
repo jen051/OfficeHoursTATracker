@@ -24,6 +24,12 @@ function App() {
   const [inQueue, setInQueue] = useState(false);
   const [hash, setHash] = useState(null);
 
+  useEffect(() => {
+    axios.get("/api/in-queue-status")
+      .then(res => setInQueue(res.data.in_queue))
+      .catch(err => console.error(err));
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -57,12 +63,6 @@ function App() {
 
   const buttonSubmit = (e) => {
     e.preventDefault();
-
-    useEffect(() => {
-    axios.get("/api/in-queue-status")
-      .then(res => setInQueue(res.data.in_queue))
-      .catch(err => console.error(err));
-    }, []);
 
     if (!inQueue) {
       fetch("https://officehourstatracker.onrender.com/api/button-queue", {
@@ -106,12 +106,12 @@ function App() {
   const [queue, setQueue] = useState([])
 
   useEffect(() => {
-    console.log("Fetching scans from API...")
+    //console.log("Fetching scans from API...")
     const fetchScans = () => {
       fetch('https://officehourstatracker.onrender.com/api/scans')
       .then(r => r.json())
       .then(d => {
-      console.log("API response:", d);
+      //console.log("API response:", d);
       setScans(d);
       })
       .catch(() => setScans('API error'))
@@ -122,7 +122,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    console.log("Fetching queue from API...")
+    //console.log("Fetching queue from API...")
     const fetchQueue = () => {
     fetch('https://officehourstatracker.onrender.com/api/queue')
       .then(r => r.json())
