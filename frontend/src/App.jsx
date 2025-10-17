@@ -26,7 +26,11 @@ function App() {
 
   useEffect(() => {
     fetch("https://officehourstatracker.onrender.com/api/in-queue-status")
-      .then(res => setInQueue(res.data.in_queue))
+      .then(res => {
+        setInQueue(res.data.in_queue);
+        if (res.data.random_name && data.random_name != -1) {
+          setConfirmation(`You’ve been added to the queue as ${data.random_name}`);
+        }
       .catch(err => console.error(err));
   }, []);
 
