@@ -30,7 +30,7 @@ function App() {
       .then(data => {
         setInQueue(data.in_queue);
         if (data.random_name && data.random_name !== -1) {
-          setConfirmation(`You’ve been added to the queue as ${data.random_name}`);
+          setConfirmation(`You’ve already been previously added to the queue as ${data.random_name}`);
         }
       })
       .catch(err => console.error(err));
