@@ -207,7 +207,7 @@ def button_queue():
         response["hash"] = hash
     return jsonify(response)
 
-@app.route("/api/in-queue-status", methods=["POST"])
+@app.route("/api/in-queue-status", methods=["POST, GET"])
 def in_queue_status():
     ip_address = request.remote_addr
     status = ip_address in random_dict
