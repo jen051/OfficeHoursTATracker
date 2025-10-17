@@ -213,6 +213,7 @@ def in_queue_status():
     status = ip_address in random_dict
     response = {}
     response["in_queue"] = status
+    response["random_name"] = random_dict[ip_address] if status else -1
     return jsonify(response)
 
 
