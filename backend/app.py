@@ -85,6 +85,9 @@ def enqueue_no_id(ip_address):
             queue.append(random_name)
             heapq.heappush(time_heap, (datetime.now(), hash))
             return random_name, hash
+    else:
+        random_name = random_dict[hash]
+        return random_name, hash
 
 def read_from_scanner(gtid):
     gtid = gtid[6:15] if len(gtid) >= 15 else gtid # extract gtid from string
@@ -96,18 +99,18 @@ def read_from_scanner(gtid):
 
     # student scan, add to queue
     if gtid not in name_dictionary:
-        if gtid not in random_dict:
-            random_dict[gtid] = random.choice(random_names)
+        # if gtid not in random_dict:
+        #     random_dict[gtid] = random.choice(random_names)
 
-        random_name = random_dict[gtid]
+        # random_name = random_dict[gtid]
 
-        if random_name in queue:
-            queue.pop(0)
-            random_dict.pop(gtid)
-        else:
-            queue.append(random_name)
-            heapq.heappush(time_heap, (datetime.now(), random_name)) # heap fix
-            return -1, random_name, -1, -1, -1
+        # if random_name in queue:
+        #     queue.pop(0)
+        #     random_dict.pop(gtid)
+        # else:
+        #     queue.append(random_name)
+        #     heapq.heappush(time_heap, (datetime.now(), random_name)) # heap fix
+        #     return -1, random_name, -1, -1, -1
         return -1, -1, -1, -1, -1
     else:
     #maybe split this into time and date
@@ -127,10 +130,13 @@ def read_from_scanner(gtid):
 
 def cleanup_queue():
     while time_heap and (datetime.now() - time_heap[0][0]).total_seconds() > THRESHOLD:
-        _, hash = heapq.heappop(time_heap)
-        random_dict.pop(hash)
-        queue.remove(random_dict[hash])
-        print(f"Removed {random_dict[hash]} from queue due to timeout")
+        _, ip_hash = heapq.heappop(time_heap)
+        name = random_dict.pop(ip_hash, None)
+        if name and name in queue:
+            try:
+                queue.remove(name)
+            except ValueError:
+                pass
 
 def periodic_cleanup():
     while True:
