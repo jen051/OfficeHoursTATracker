@@ -25,7 +25,7 @@ function App() {
   const [hash, setHash] = useState(null);
 
   useEffect(() => {
-    axios.get("/api/in-queue-status")
+    fetch("https://officehourstatracker.onrender.com/api/in-queue-status")
       .then(res => setInQueue(res.data.in_queue))
       .catch(err => console.error(err));
   }, []);
