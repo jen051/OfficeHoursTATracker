@@ -18,14 +18,26 @@ export function Card({ title, children, className = "" }) {
   );
 }
 
+export function getDeviceId() {
+  let id = localStorage.getItem("device_id");
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem("device_id", id);
+  }
+  return id;
+}
+
 function App() {
   const [confirmation, setConfirmation] = useState("");
   const [gtid, setGtid] = useState("")
   const [inQueue, setInQueue] = useState(false);
   const [hash, setHash] = useState(null);
+  const deviceId = getDeviceId();
 
   useEffect(() => {
-    fetch("https://officehourstatracker.onrender.com/api/in-queue-status")
+    fetch("https://officehourstatracker.onrender.com/api/in-queue-status"), {
+      body: JSON.stringify({device_id: deviceId })
+    }
       .then(res => res.json())
       .then(data => {
         setInQueue(data.in_queue);
@@ -76,7 +88,7 @@ function App() {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({})
+      body: JSON.stringify({device_id: deviceId })
       })
       .then(res => res.json())
       .then(data => {
@@ -94,7 +106,7 @@ function App() {
         fetch("https://officehourstatracker.onrender.com/api/dequeue", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ hash })
+        body: JSON.stringify({device_id: deviceId})
       })
       .then(res => res.json())
       .then(data => {

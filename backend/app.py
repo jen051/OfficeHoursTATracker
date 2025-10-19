@@ -3,7 +3,7 @@ import sqlite3
 from datetime import datetime
 import csv
 import os
-from flask_cors import CORS  # pip install flask-cors (for dev)
+from flask_cors import CORS
 import json
 import random
 import threading
@@ -70,24 +70,24 @@ def log_scan(gtid, name, action, timestamp, instructor_tag):
     db_connect.commit()
     #maybe connect to front end and put out a popup when this is triggered
 
-def enqueue_no_id(ip_address):
-    hash = int(hashlib.sha256(ip_address.encode()).hexdigest(), 16) % (10**8)
-    if hash not in random_dict:
-        random_dict[hash] = random.choice(random_names)
+def enqueue_no_id(device_id):
+    device_hash = int(hashlib.sha256(device_id.encode()).hexdigest(), 16) % (10**8)
+    if device_hash not in random_dict:
+        random_dict[device_hash] = random.choice(random_names)
 
-        random_name = random_dict[hash]
+        random_name = random_dict[device_hash]
 
         if random_name in queue:
             queue.pop(0)
-            random_dict.pop(hash)
+            random_dict.pop(device_hash)
             return -1, -1
         else:
             queue.append(random_name)
-            heapq.heappush(time_heap, (datetime.now(), hash))
-            return random_name, hash
+            heapq.heappush(time_heap, (datetime.now(), device_hash))
+            return random_name, device_hash
     else:
-        random_name = random_dict[hash]
-        return random_name, hash
+        random_name = random_dict[device_hash]
+        return random_name, device_hash
 
 def read_from_scanner(gtid):
     gtid = gtid[6:15] if len(gtid) >= 15 else gtid # extract gtid from string
@@ -130,8 +130,8 @@ def read_from_scanner(gtid):
 
 def cleanup_queue():
     while time_heap and (datetime.now() - time_heap[0][0]).total_seconds() > THRESHOLD:
-        _, ip_hash = heapq.heappop(time_heap)
-        name = random_dict.pop(ip_hash, None)
+        _, device_hash = heapq.heappop(time_heap)
+        name = random_dict.pop(device_hash, None)
         if name and name in queue:
             try:
                 queue.remove(name)
@@ -205,35 +205,52 @@ def manual_scan():
 
 @app.route("/api/button-queue", methods=["POST"])
 def button_queue():
-    ip_address = request.remote_addr 
     response = {"status": "success"}
-    name, hash = enqueue_no_id(ip_address) 
+
+    data = request.get_json()
+    device_id = data.get("device_id")
+    
+    if not device_id:
+        return jsonify({"status": "error", "message": "Missing device_id"}), 400
+
+    name, device_hash = enqueue_no_id(device_id)
     if name != 1:
         response["random_name"] = name
-        response["hash"] = hash
+        response["hash"] = device_hash
     return jsonify(response)
 
 @app.route("/api/in-queue-status", methods=["POST, GET"])
 def in_queue_status():
-    ip_address = request.remote_addr
-    status = ip_address in random_dict
+    data = request.get_json()
+    device_id = data.get("device_id")
+
+
+
+    if not device_id:
+        return jsonify({"in_queue": False, "random_name": -1})
+    
+    device_hash = int(hashlib.sha256(device_id.encode()).hexdigest(), 16) % (10**8)
+    
+    status = device_hash in random_dict
     response = {}
+
     response["in_queue"] = status
-    response["random_name"] = random_dict[ip_address] if status else -1
+    response["random_name"] = random_dict[device_id] if status else -1
     return jsonify(response)
 
 
 @app.route("/api/dequeue", methods=["POST"])
 def dequeue():
     data = request.get_json()
-    hash = data.get("hash")
+    device_id = data.get("device_id")
+    device_hash = int(hashlib.sha256(device_id.encode()).hexdigest(), 16) % (10**8)
 
-    if hash in random_dict:
-        name = random_dict.pop(hash)
+    if device_hash in random_dict:
+        name = random_dict.pop(device_id)
         if name in queue:
             queue.remove(name) 
         global time_heap
-        time_heap = [t for t in time_heap if t[1] != hash]
+        time_heap = [t for t in time_heap if t[1] != device_id]
         return jsonify({"status": "success", "removed_name": name})
     return jsonify({"status": "error", "message": "Token not found"}), 404
 
