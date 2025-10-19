@@ -48,6 +48,7 @@ function App() {
         setInQueue(data.in_queue);
         if (data.random_name && data.random_name !== -1) {
           setConfirmation(`You’ve already been previously added to the queue as ${data.random_name}`);
+          setTimeout(() => setConfirmation(""), 3000);
         }
       })
       .catch(err => console.error(err));
@@ -81,10 +82,10 @@ function App() {
     } else if (data.random_name == -3) {
       setConfirmation(`Not a TA id`);
     }
+    setTimeout(() => setConfirmation(""), 3000);
   })
     .catch(err => console.error("Error:", err));
 
-    setTimeout(() => setConfirmation(""), 3000);
     setGtid("");
   }
 
@@ -107,6 +108,7 @@ function App() {
           setConfirmation(`You’ve been added to the queue as ${data.random_name}`);
         } else if (data.random_name == -1) {
           setConfirmation(`You’ve been removed from the queue`);
+          setTimeout(() => setConfirmation(""), 3000);
         }
     })
       .catch(err => console.error("Error:", err));
@@ -123,6 +125,7 @@ function App() {
           setInQueue(false);
           setHash(null);
           setConfirmation(`Dequeued ${data.removed_name}`);
+          setTimeout(() => setConfirmation(""), 3000);
         }
       })
       .catch(err => console.error(err));
