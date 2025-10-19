@@ -218,7 +218,7 @@ def button_queue():
     name, device_id = enqueue_no_id(device_id)
     if name != 1:
         response["random_name"] = name
-        response["id"] = device_id
+        response["device_id"] = device_id
     return jsonify(response)
 
 

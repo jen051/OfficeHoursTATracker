@@ -27,6 +27,8 @@ export function getDeviceId() {
   return id;
 }
 
+
+
 function App() {
   const [confirmation, setConfirmation] = useState("");
   const [gtid, setGtid] = useState("")
@@ -34,10 +36,13 @@ function App() {
   const [hash, setHash] = useState(null);
   const deviceId = getDeviceId();
 
+  
   useEffect(() => {
-    fetch("https://officehourstatracker.onrender.com/api/in-queue-status"), {
-      body: JSON.stringify({device_id: deviceId })
-    }
+    fetch("https://officehourstatracker.onrender.com/api/in-queue-status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ device_id: deviceId })
+    })
       .then(res => res.json())
       .then(data => {
         setInQueue(data.in_queue);
@@ -93,7 +98,7 @@ function App() {
       .then(res => res.json())
       .then(data => {
         setInQueue(true);
-        setHash(data.hash);
+        setHash(data.device_id);
         if (data.random_name && data.random_name != -1) {
           setConfirmation(`You’ve been added to the queue as ${data.random_name}`);
         } else if (data.random_name == -1) {
