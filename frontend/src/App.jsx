@@ -76,6 +76,10 @@ function App() {
       setConfirmation(`You’ve been added to the queue as ${data.random_name}`);
     } else if (data.random_name == -1) {
       setConfirmation(`You’ve been removed from the queue`);
+    } else if (data.random_name == -2) {
+      setConfirmation(`Not a valid GTID`);
+    } else if (data.random_name == -3) {
+      setConfirmation(`Not a TA id`);
     }
   })
     .catch(err => console.error("Error:", err));

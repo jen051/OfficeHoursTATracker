@@ -97,7 +97,7 @@ def read_from_scanner(gtid):
     # Normal GITD pattern
     pattern = r"^\d{9}$"
     if not re.match(pattern, gtid):
-        return -1, -1, -1, -1, -1
+        return -1, -2, -1, -1, -1
 
     # student scan, add to queue
     if gtid not in name_dictionary:
@@ -113,7 +113,7 @@ def read_from_scanner(gtid):
         #     queue.append(random_name)
         #     heapq.heappush(time_heap, (datetime.now(), random_name)) # heap fix
         #     return -1, random_name, -1, -1, -1
-        return -1, -1, -1, -1, -1
+        return -1, -3, -1, -1, -1
     else:
     #maybe split this into time and date
         time = datetime.now()
@@ -201,8 +201,6 @@ def manual_scan():
     gtid, name, action, time_str, instructor_tag = read_from_scanner(gtid) 
     if gtid != -1:
        log_scan(gtid, name, action, time_str, instructor_tag)
-    elif name != 1:
-        response["random_name"] = name
     return jsonify(response)
 
 @app.route("/api/button-queue", methods=["POST"])
