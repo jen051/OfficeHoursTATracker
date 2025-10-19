@@ -71,23 +71,25 @@ def log_scan(gtid, name, action, timestamp, instructor_tag):
     #maybe connect to front end and put out a popup when this is triggered
 
 def enqueue_no_id(device_id):
-    device_hash = int(hashlib.sha256(device_id.encode()).hexdigest(), 16) % (10**8)
-    if device_hash not in random_dict:
-        random_dict[device_hash] = random.choice(random_names)
+    if device_id not in random_dict:
+        random_dict[device_id] = random.choice(random_names)
 
-        random_name = random_dict[device_hash]
+        random_name = random_dict[device_id]
 
         if random_name in queue:
-            queue.pop(0)
-            random_dict.pop(device_hash)
+            try:
+                queue.remove(random_name)
+            except ValueError:
+                pass
+            random_dict.pop(device_id, None)
             return -1, -1
         else:
             queue.append(random_name)
-            heapq.heappush(time_heap, (datetime.now(), device_hash))
-            return random_name, device_hash
+            heapq.heappush(time_heap, (datetime.now(), device_id))
+            return random_name, device_id
     else:
-        random_name = random_dict[device_hash]
-        return random_name, device_hash
+        random_name = random_dict[device_id]
+        return random_name, device_id
 
 def read_from_scanner(gtid):
     gtid = gtid[6:15] if len(gtid) >= 15 else gtid # extract gtid from string
@@ -130,8 +132,8 @@ def read_from_scanner(gtid):
 
 def cleanup_queue():
     while time_heap and (datetime.now() - time_heap[0][0]).total_seconds() > THRESHOLD:
-        _, device_hash = heapq.heappop(time_heap)
-        name = random_dict.pop(device_hash, None)
+        _, device_id = heapq.heappop(time_heap)
+        name = random_dict.pop(device_id, None)
         if name and name in queue:
             try:
                 queue.remove(name)
@@ -213,25 +215,26 @@ def button_queue():
     if not device_id:
         return jsonify({"status": "error", "message": "Missing device_id"}), 400
 
-    name, device_hash = enqueue_no_id(device_id)
+    name, device_id = enqueue_no_id(device_id)
     if name != 1:
         response["random_name"] = name
-        response["hash"] = device_hash
+        response["id"] = device_id
     return jsonify(response)
 
-@app.route("/api/in-queue-status", methods=["POST, GET"])
+
+
+@app.route("/api/in-queue-status", methods=["POST", "GET"])
 def in_queue_status():
-    data = request.get_json()
-    device_id = data.get("device_id")
-
-
+    if request.method == "GET":
+        device_id = request.args.get("device_id")
+    else:
+        data = request.get_json(silent=True) or {}
+        device_id = data.get("device_id")
 
     if not device_id:
         return jsonify({"in_queue": False, "random_name": -1})
-    
-    device_hash = int(hashlib.sha256(device_id.encode()).hexdigest(), 16) % (10**8)
-    
-    status = device_hash in random_dict
+        
+    status = device_id in random_dict
     response = {}
 
     response["in_queue"] = status
@@ -243,9 +246,8 @@ def in_queue_status():
 def dequeue():
     data = request.get_json()
     device_id = data.get("device_id")
-    device_hash = int(hashlib.sha256(device_id.encode()).hexdigest(), 16) % (10**8)
 
-    if device_hash in random_dict:
+    if device_id in random_dict:
         name = random_dict.pop(device_id)
         if name in queue:
             queue.remove(name) 
