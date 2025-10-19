@@ -47,8 +47,8 @@ function App() {
       .then(data => {
         setInQueue(data.in_queue);
         if (data.random_name && data.random_name !== -1) {
-          setConfirmation(`You’ve already been previously added to the queue as ${data.random_name}`);
-          setTimeout(() => setConfirmation(""), 3000);
+          setConfirmation(`You’ve been previously added to the queue as ${data.random_name}`);
+          setTimeout(() => setConfirmation(""), 2000);
         }
       })
       .catch(err => console.error(err));
@@ -82,7 +82,7 @@ function App() {
     } else if (data.ta_name == -3) {
       setConfirmation(`Not a TA id`);
     }
-    setTimeout(() => setConfirmation(""), 3000);
+    setTimeout(() => setConfirmation(""), 2500);
   })
     .catch(err => console.error("Error:", err));
 
@@ -106,9 +106,10 @@ function App() {
         setHash(data.device_id);
         if (data.random_name && data.random_name != -1) {
           setConfirmation(`You’ve been added to the queue as ${data.random_name}`);
+          setTimeout(() => setConfirmation(""), 2500);
         } else if (data.random_name == -1) {
           setConfirmation(`You’ve been removed from the queue`);
-          setTimeout(() => setConfirmation(""), 3000);
+          setTimeout(() => setConfirmation(""), 2500);
         }
     })
       .catch(err => console.error("Error:", err));
@@ -125,7 +126,7 @@ function App() {
           setInQueue(false);
           setHash(null);
           setConfirmation(`Dequeued ${data.removed_name}`);
-          setTimeout(() => setConfirmation(""), 3000);
+          setTimeout(() => setConfirmation(""), 2500);
         }
       })
       .catch(err => console.error(err));
@@ -147,7 +148,7 @@ function App() {
       .catch(() => setScans('API error'))
     }
     fetchScans();
-    const interval = setInterval(fetchScans, 1000);
+    const interval = setInterval(fetchScans, 250);
     return () => clearInterval(interval)
   }, [])
 
@@ -162,14 +163,20 @@ function App() {
       .catch(() => setQueue('API error'))
     }
     fetchQueue();
-    const interval = setInterval(fetchQueue, 1000);
+    const interval = setInterval(fetchQueue, 250);
     return () => clearInterval(interval)
   }, [])
 
   return (
     <div>
+      {confirmation && (
+        <div className="confirmation-popup">
+          {confirmation}
+        </div>
+      )}
+
       <div 
-        style={{textAlign: "center", alignItems: "center", gap: "2rem", marginBottom: "0.25rem", marginTop: 0 }}
+        style={{textAlign: "center", alignItems: "center", gap: "2rem", marginBottom: "2rem", marginTop: 0 }}
       >
         <h1 style={{ color: "#F2F4F3" }}>
           CS2050 Office Hours
@@ -180,20 +187,9 @@ function App() {
      
       <div>
         <div className='cards-row'>
-          <Card 
-            title="Present TAs"
-            className="card">{scans.length === 0 ? (
+          <Card title="Present TAs" className="card">{scans.length === 0 ? (
             <p>No scans yet</p>
-          ) : (
-            <ul>
-              {scans.map(scan => (
-                <li key={scan.id}>
-                  {scan}
-                </li>
-              ))}
-            </ul>
-          )}
-          </Card>
+            ) : ( <ul> {scans.map(scan => ( <li key={scan.id}> {scan} </li> ))} </ul> )} </Card>
           <Card
             title="Queue"
             className="card">{queue.length === 0 ? (
@@ -211,8 +207,8 @@ function App() {
         </div>
         <div className="center-div">
           
-            <form onSubmit={buttonSubmit} style={{ marginBottom: "1.5rem" }}>
-              {confirmation && <p className="confirmation">{confirmation}</p>}
+            <form onSubmit={buttonSubmit} style={{ marginBottom: "0.25rem" }}>
+              {/* {confirmation && <p className="confirmation">{confirmation}</p>} */}
               <label htmlFor="gtid" style={{ color: "#F2F4F3" }}>Students: Press this button!</label>
               <div className="button-group">
                 <button type="submit">

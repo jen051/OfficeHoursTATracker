@@ -123,9 +123,9 @@ def read_from_scanner(gtid):
             action_dictionary[gtid] = "CLOCK IN"
         else:
             action_dictionary[gtid] = "CLOCK OUT"
-
-        name = f"{name_dictionary[gtid][0]} ({name_dictionary[gtid][1]})"
         instructor_tag = name_dictionary[gtid][1]
+        name = f"{name_dictionary[gtid][0]} ({instructor_tag})"
+        
 
     return gtid, name, action_dictionary[gtid], time_str, instructor_tag
 
@@ -197,10 +197,11 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 def manual_scan():
     gtid = request.get_json()["gtid"]
     print("Received JSON:", gtid)
-    response = {"status": "success"}
+    response = {"ta_name": -1}
     gtid, name, action, time_str, instructor_tag = read_from_scanner(gtid) 
     if gtid != -1:
        log_scan(gtid, name, action, time_str, instructor_tag)
+       response["ta_name"] = name
     return jsonify(response)
 
 @app.route("/api/button-queue", methods=["POST"])
