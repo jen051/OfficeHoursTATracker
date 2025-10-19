@@ -73,13 +73,13 @@ function App() {
     })
     .then(res => res.json())
     .then(data => {
-    if (data.random_name && data.random_name != -1) {
-      setConfirmation(`You’ve been added to the queue as ${data.random_name}`);
-    } else if (data.random_name == -1) {
-      setConfirmation(`You’ve been removed from the queue`);
-    } else if (data.random_name == -2) {
+    if (data.ta_name && data.ta_name != -1) {
+      setConfirmation(`Scanned in ${data.ta_name}`);
+    } else if (data.ta_name == -1) {
+      setConfirmation(`You’ve scanned out successfully`);
+    } else if (data.ta_name == -2) {
       setConfirmation(`Not a valid GTID`);
-    } else if (data.random_name == -3) {
+    } else if (data.ta_name == -3) {
       setConfirmation(`Not a TA id`);
     }
     setTimeout(() => setConfirmation(""), 3000);
