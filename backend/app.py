@@ -64,10 +64,10 @@ cursor.execute(query)
 
 db_connect.commit()
 
-def check_ip():
-    hostname = socket.gethostname()
-    ip = socket.gethostbyname(hostname)
-    return ip == '130.207.113.218'
+# def check_ip():
+#     hostname = socket.gethostname()
+#     ip = socket.gethostbyname(hostname)
+#     return ip == '130.207.113.218'
 
 def log_scan(gtid, name, action, timestamp, instructor_tag):
     cursor.execute("INSERT INTO scans (gtid, name, action, timestamp, instructor_tag) VALUES (?, ?, ?, ?, ?)", 
@@ -201,10 +201,11 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 @app.route("/api/manual-scan", methods=["POST"])
 def manual_scan():
     gtid = request.get_json()["gtid"]
-    print("Received JSON:", gtid)
+    client_ip = request.remote_addr
+    valid_ip = client_ip == '130.207.113.218'
     response = {"ta_name": -1, "valid_ip": False}
     gtid, name, action, time_str, instructor_tag = read_from_scanner(gtid) 
-    if gtid != -1 and check_ip():
+    if gtid != -1 and valid_ip:
        log_scan(gtid, name, action, time_str, instructor_tag)
        response["ta_name"] = name
        response["valid_ip"] = True
