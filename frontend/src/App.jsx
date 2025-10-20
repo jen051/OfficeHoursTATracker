@@ -73,8 +73,10 @@ function App() {
     })
     .then(res => res.json())
     .then(data => {
-    if (data.ta_name && data.ta_name != -1) {
+    if (data.ta_name && data.ta_name != -1 && data.valid_ip) {
       setConfirmation(`Scanned in ${data.ta_name}`);
+    } else if (!data.valid_ip) {
+      setConfirmation(`TAs: Please scan in through the computer in the office hours room.`);
     } else if (data.ta_name == -1) {
       setConfirmation(`You’ve scanned out successfully`);
     } else if (data.ta_name == -2) {
@@ -182,7 +184,7 @@ function App() {
           CS2050 Office Hours
         </h1>
         <p style={{ color: "#F2F4F3" }}>Students: Click the button to add yourself to the queue.</p>
-        <p style={{ color: "#F2F4F3" }}>TAs: Input your GTID to sign in.</p>
+        <p style={{ color: "#F2F4F3" }}>TAs: Input your GTID to sign in. Reinput your ID to sign out.</p>
       </div>
      
       <div>
