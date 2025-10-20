@@ -202,6 +202,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 def manual_scan():
     gtid = request.get_json()["gtid"]
     client_ip = request.remote_addr
+    print(client_ip)
     valid_ip = client_ip == '130.207.113.218'
     response = {"ta_name": -1, "valid_ip": False}
     gtid, name, action, time_str, instructor_tag = read_from_scanner(gtid) 
