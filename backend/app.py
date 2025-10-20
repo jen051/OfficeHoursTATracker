@@ -15,6 +15,13 @@ import socket
 #from pynput import keyboard
 import re
 
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,  # Change to DEBUG for more verbose output
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
+
 app = Flask(__name__)
 app.config['CORS_HEADERS'] = 'Content-Type'
 DB = "data/scans.db"
@@ -64,10 +71,19 @@ cursor.execute(query)
 
 db_connect.commit()
 
-# def check_ip():
-#     hostname = socket.gethostname()
-#     ip = socket.gethostbyname(hostname)
-#     return ip == '130.207.113.218'
+def get_client_ip():
+    if "X-Forwarded-For" in request.headers:
+        ip = request.headers["X-Forwarded-For"].split(",")[0].strip()
+    else:
+        ip = request.remote_addr
+    return ip
+
+def check_ip():
+    client_ip = get_client_ip()
+    logging.info(f"Received scan request from IP: {check_ip}")
+    AUTHORIZED_PI_IP = "130.207.113.218"
+    return client_ip == AUTHORIZED_PI_IP
+
 
 def log_scan(gtid, name, action, timestamp, instructor_tag):
     cursor.execute("INSERT INTO scans (gtid, name, action, timestamp, instructor_tag) VALUES (?, ?, ?, ?, ?)", 
@@ -201,12 +217,9 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 @app.route("/api/manual-scan", methods=["POST"])
 def manual_scan():
     gtid = request.get_json()["gtid"]
-    client_ip = request.remote_addr
-    print(client_ip)
-    valid_ip = client_ip == '130.207.113.218'
     response = {"ta_name": -1, "valid_ip": False}
     gtid, name, action, time_str, instructor_tag = read_from_scanner(gtid) 
-    if gtid != -1 and valid_ip:
+    if gtid != -1 and check_ip():
        log_scan(gtid, name, action, time_str, instructor_tag)
        response["ta_name"] = name
        response["valid_ip"] = True
