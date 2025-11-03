@@ -1,12 +1,8 @@
 import React from "react";
 
 export function TACard({ name }) {
-//   const cleanName = name
-//     .replace(/\s*\(.*?\)\s*/g, "") // remove anything in parentheses like (TA)
-//     .trim()
-//     .replace(/\s+/g, "_"); // replace spaces with underscores
-
-  const photoPath = `/photos/${name}.png`; // e.g. "Aidan_Nguyen.jpg"
+  const encodedName = encodeURIComponent(name); // safely encode spaces/parentheses
+  const photoPath = `/photos/${encodedName}.png`;
 
   return (
     <div className="ta-card">
@@ -16,7 +12,7 @@ export function TACard({ name }) {
         className="ta-photo"
         onError={(e) => {
           e.target.onerror = null;
-          e.target.src = "/photos/default.png"; // fallback if no photo found
+          e.target.src = "/photos/default.png"; // fallback
         }}
       />
       <p className="ta-name">{name}</p>
