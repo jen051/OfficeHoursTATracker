@@ -1,5 +1,4 @@
 flask
 react
 flask-cors
-pynput
 gunicorn==20.1.0

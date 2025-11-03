@@ -183,16 +183,25 @@ function App() {
         <h1 style={{ color: "#F2F4F3" }}>
           CS2050 Office Hours
         </h1>
-        <p style={{ color: "#F2F4F3" }}>Students: Click the button to add yourself to the queue.</p>
+        {/* <p style={{ color: "#F2F4F3" }}>Students: Click the button to add yourself to the queue.</p> */}
         <p style={{ color: "#F2F4F3" }}>TAs: Input your GTID to sign in. Reinput your ID to sign out.</p>
       </div>
      
       <div>
+        
         <div className='cards-row'>
-          <Card title="Present TAs" className="card">{scans.length === 0 ? (
-            <p>No scans yet</p>
-            ) : ( <ul> {scans.map(scan => ( <li key={scan.id}> {scan} </li> ))} </ul> )} </Card>
-          <Card
+          <Card title="Present TAs" className="card">
+            {scans.length === 0 ? (
+              <p>No scans yet</p>
+            ) : (
+              <div className="ta-grid">
+                {scans.map((scan, i) => (
+                  <TACard key={i} name={scan} />
+                ))}
+              </div>
+            )}
+          </Card>
+          {/* <Card
             title="Queue"
             className="card">{queue.length === 0 ? (
             <p>No queue yet</p>
@@ -204,20 +213,21 @@ function App() {
                 </li>
               ))}
             </ul>
-          )}</Card>
+          )}</Card> */}
         
         </div>
         <div className="center-div">
           
-            <form onSubmit={buttonSubmit} style={{ marginBottom: "0.25rem" }}>
+            {/* <form onSubmit={buttonSubmit} style={{ marginBottom: "0.25rem" }}>
               {/* {confirmation && <p className="confirmation">{confirmation}</p>} */}
-              <label htmlFor="gtid" style={{ color: "#F2F4F3" }}>Students: Press this button!</label>
+              {/*<label htmlFor="gtid" style={{ color: "#F2F4F3" }}>Students: Press this button!</label>
               <div className="button-group">
                 <button type="submit">
                   {inQueue ? "Dequeue" : "Enqueue"}
                 </button>
               </div>
-            </form>
+            </form>*/}
+            
 
             <form onSubmit={handleSubmit}>
               <label htmlFor="gtid" style={{ color: "#F2F4F3" }}>TAs: Input GTID Here:</label>
