@@ -76,6 +76,7 @@ def check_ip():
         ip = request.remote_addr
     logging.info(f"Received scan request from IP: {ip}")
     AUTHORIZED_PI_IP = ["130.207.113.218","172.225.247.21","146.75.232.139","99.23.139.243"]
+    #return True
     return ip in AUTHORIZED_PI_IP
 
 
